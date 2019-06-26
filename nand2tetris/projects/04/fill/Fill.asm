@@ -12,3 +12,48 @@
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
+
+//while (1) {
+//	if (M[KBD] > 0) {
+//		color = black;	
+//	} else {
+//		color = white;	
+//	}
+//	for (i = SCREEN; i < KBD; i++) {
+//		M[i] = color;	
+//	}
+//}
+
+(LOOP)
+	@KBD
+	D = M
+	@BLACK
+	D;JGT
+	@color
+	M = 0
+	@PAINT
+	0;JMP
+(BLACK)
+	@color
+	M = -1
+(PAINT)
+	@SCREEN
+	D = A
+	@i
+	M = D
+(PAINTLOOP)
+	@i
+	D = M
+	@KBD
+	D = D - A
+	@LOOP
+	D;JGE
+	@color
+	D = M
+	@i
+	A = M
+	M = D
+	@i
+	M = M + 1
+	@PAINTLOOP
+	0;JMP
