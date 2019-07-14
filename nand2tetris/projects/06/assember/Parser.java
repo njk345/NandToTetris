@@ -7,7 +7,7 @@ public class Parser {
     /**
      * A static enum to represent the three types of commands
      */
-    private static enum CommandType {
+    public static enum CommandType {
         A_COMMAND, C_COMMAND, L_COMMAND
     }
     /**
@@ -52,14 +52,17 @@ public class Parser {
            the command type, and skips past all commented lines */
         do {
             currentCommand = in.nextLine().replaceAll("\\s", "");
-            if(currentCommand.charAt(0) == '@') {
-                currentCommandType = CommandType.A_COMMAND;
-            } else if(currentCommand.charAt(0) == '(') {
-                currentCommandType = CommandType.L_COMMAND;
-            } else {
-                currentCommandType = CommandType.C_COMMAND;
+            System.out.println(currentCommand);
+            if (!currentCommand.isEmpty()) {
+                if(currentCommand.charAt(0) == '@') {
+                    currentCommandType = CommandType.A_COMMAND;
+                } else if(currentCommand.charAt(0) == '(') {
+                    currentCommandType = CommandType.L_COMMAND;
+                } else {
+                    currentCommandType = CommandType.C_COMMAND;
+                }
             }
-        } while(currentCommand.charAt(0) == '/' && hasMoreCommands());
+        } while((currentCommand.isEmpty() || currentCommand.charAt(0) == '/') && hasMoreCommands());
     }
     /**
      * A method that returns the type of the current command
@@ -98,7 +101,7 @@ public class Parser {
             if (eqInd == -1) {
                 return "null";
             } else {
-                return currentCommand.substring(0, eqInd - 1);
+                return currentCommand.substring(0, eqInd);
             }
         } else {
             return null;
@@ -116,9 +119,13 @@ public class Parser {
             int eqInd = currentCommand.indexOf('=');
             int semcolInd = currentCommand.indexOf(';');
             if(eqInd == -1) {
-                return currentCommand.substring(0, semcolInd - 1);
+                return currentCommand.substring(0, semcolInd);
             } else {
-                return currentCommand.substring(eqInd + 1, semcolInd - 1);
+                if(semcolInd != -1) {
+                    return currentCommand.substring(eqInd + 1, semcolInd);
+                } else {
+                    return currentCommand.substring(eqInd + 1);
+                }
             }
         } else {
             return null;
@@ -134,7 +141,11 @@ public class Parser {
     public String jump() {
         if(currentCommandType == CommandType.C_COMMAND) {
             int semcolInd = currentCommand.indexOf(';');
-            return currentCommand.substring(semcolInd + 1);
+            if (semcolInd == -1) {
+                return "null";
+            } else {
+                return currentCommand.substring(semcolInd + 1);
+            }
         } else {
             return null;
         }
