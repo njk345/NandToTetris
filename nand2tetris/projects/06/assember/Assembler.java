@@ -20,24 +20,63 @@ public class Assembler {
         String filename = args[0].substring(0, args[0].indexOf("."));
         Scanner in = null;
         Parser parser = null;
+        SymbolTable st = new SymbolTable();
         BufferedWriter bw = null;
+        int romCounter;
+        int varCounter;
+        
         try {
+            // FIRST PASS
+            in = new Scanner(new FileReader(args[0]));
+            parser = new Parser(in);
+            romCounter = 0;
+            
+            /* Go through the ASM file and add all labels and their
+               ROM addresses to the SymbolTable */
+            while(parser.hasMoreCommands()) {
+                parser.advance();
+                Parser.CommandType currCommType = parser.commandType();
+                if (currCommType == Parser.CommandType.L_COMMAND) {
+                    String symbol = parser.symbol();
+                    st.addEntry(symbol, romCounter);
+                } else {
+                    romCounter++;
+                }
+            }
+            
+            // SECOND PASS
             in = new Scanner(new FileReader(args[0]));
             parser = new Parser(in);
             bw = new BufferedWriter(new FileWriter(filename + ".hack"));
+            varCounter = 16;
+    
             while(parser.hasMoreCommands()) {
                 parser.advance();
                 Parser.CommandType currCommType = parser.commandType();
                 String line = null;
+                
                 if (currCommType == Parser.CommandType.A_COMMAND) {
-                    int value = Integer.parseInt(parser.symbol());
-                    String binVal = Integer.toBinaryString(value);
+                    int value;
+                    String symbol = parser.symbol();
+                    if (st.contains(symbol)) { // symbol either variable we've seen or a label
+                        value = st.getAddress(symbol);
+                    } else {
+                        if(isNumber(symbol)) { // symbol is an integer constant
+                            value = Integer.parseInt(symbol);
+                        } else { // symbol is a new variable
+                            st.addEntry(symbol, varCounter);
+                            value = varCounter;
+                            varCounter++;
+                        }
+                    }
+                    
+                    String binaryValue = Integer.toBinaryString(value);
                     String leftZeros = "0";
-                    for (int i = 0; i < 15 - binVal.length(); i++) {
+                    for (int i = 0; i < 15 - binaryValue.length(); i++) {
                         leftZeros += "0";
                     }
-                    line = leftZeros + binVal;
-                } else { // C-Command
+                    line = leftZeros + binaryValue;
+                } else if(currCommType == Parser.CommandType.C_COMMAND) {
                     line = "111";
                     String[] compBits = Code.compBits(parser.comp());
                     String[] destBits = Code.destBits(parser.dest());
@@ -46,9 +85,10 @@ public class Assembler {
                     line += Arrays.stream(destBits).collect(Collectors.joining());
                     line += Arrays.stream(jumpBits).collect(Collectors.joining());
                 }
-                System.out.println(line);
-                bw.write(line);
-                bw.newLine();
+                if(currCommType != Parser.CommandType.L_COMMAND) {
+                    bw.write(line);
+                    bw.newLine();
+                }
             }
         } catch(IOException ioe) {
             ioe.printStackTrace();
@@ -63,6 +103,21 @@ public class Assembler {
             } catch(Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+    /**
+     * A method to determine whether a string can be parsed as an integer
+     *
+     * @param s A string
+     *
+     * @return True, if s represents an integer, false if not
+     */
+    private static boolean isNumber(String s) {
+        try {
+            int n = Integer.parseInt(s);
+            return true;
+        } catch(NumberFormatException nfe) {
+            return false;
         }
     }
 }

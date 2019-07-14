@@ -51,9 +51,10 @@ public class Parser {
         /* Reads the next line, removing whitespace, determines
            the command type, and skips past all commented lines */
         do {
-            currentCommand = in.nextLine().replaceAll("\\s", "");
+            /* Get the next line, remove whitespace, and remove in-line comments */
+            currentCommand = removeInlineComment(in.nextLine().replaceAll("\\s", ""));
             System.out.println(currentCommand);
-            if (!currentCommand.isEmpty()) {
+            if (!currentCommand.isEmpty()) { // if line not blank
                 if(currentCommand.charAt(0) == '@') {
                     currentCommandType = CommandType.A_COMMAND;
                 } else if(currentCommand.charAt(0) == '(') {
@@ -61,8 +62,8 @@ public class Parser {
                 } else {
                     currentCommandType = CommandType.C_COMMAND;
                 }
-            }
-        } while((currentCommand.isEmpty() || currentCommand.charAt(0) == '/') && hasMoreCommands());
+            } /* If line is empty and there are more lines, skip to next for real command */
+        } while(currentCommand.isEmpty() && hasMoreCommands());
     }
     /**
      * A method that returns the type of the current command
@@ -148,6 +149,21 @@ public class Parser {
             }
         } else {
             return null;
+        }
+    }
+    /**
+     * A method to remove inline comments (e.g. "@R0 //address R0" --> "R0 ") from strings
+     *
+     * @param line a String
+     *
+     * @return line, with an inline comment removed if it exists
+     */
+    private static String removeInlineComment(String line) {
+        int slashIndex = line.indexOf("/");
+        if (slashIndex != -1) {
+            return line.substring(0, slashIndex);
+        } else {
+            return line;
         }
     }
 }

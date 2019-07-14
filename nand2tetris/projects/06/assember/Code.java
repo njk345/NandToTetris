@@ -3,6 +3,9 @@ import java.util.Arrays;
  * A class containing static methods to convert ASM C-Instruction mneumonics into bits
  */
 public class Code {
+    /**
+     * A 2d int array where each entry COMP_BITS[i] holds the bits for ZERO_COMPS[i] and ONE_COMPS[i]
+     */
     private static final int[][] COMP_BITS = {
         {1, 0, 1, 0, 1, 0}, {1, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 1, 0}, {0, 0, 1, 1, 0, 0},
         {1, 1, 0, 0, 0, 0}, {0, 0, 1, 1, 0, 1}, {1, 1, 0, 0, 0, 1}, {0, 0, 1, 1, 1, 1},
@@ -10,17 +13,30 @@ public class Code {
         {1, 1, 0, 0, 1, 0}, {0, 0, 0, 0, 1, 0}, {0, 1, 0, 0, 1, 1}, {0, 0, 0, 1, 1, 1},
         {0, 0, 0, 0, 0, 0}, {0, 1, 0, 1, 0, 1}
     };
+    /**
+     * A 2d int array where each entry JUMP_BITS[i] holds the bits for JUMP_STRS[i]
+     */
     private static final int[][] JUMP_BITS = {
         {0, 0, 0}, {0, 0, 1}, {0, 1, 0}, {0, 1, 1}, 
         {1, 0, 0}, {1, 0, 1}, {1, 1, 0}, {1, 1, 1}
     };
+    /**
+     * A string array holding all 8 possible jump code strings
+     */
     private static final String[] JUMP_STRS = {
         "null", "JGT", "JEQ", "JGE", "JLT", "JNE", "JLE", "JMP"
     };
+    /**
+     * A String array holding all 18 possible comp strings for which a = 0
+     */
     private static final String[] ZERO_COMPS = {
         "0", "1", "-1", "D", "A", "!D", "!A", "-D", "-A", "D+1", "A+1", "D-1", "A-1",
         "D+A", "D-A", "A-D", "D&A", "D|A"
     };
+    /**
+     * A String array holding all 10 possible comp strings for which a = 1,
+     * with empty strings added so that ONE_COMPS[i] still corresponds to COMP_BITS[i]
+     */
     private static final String[] ONE_COMPS = {
         "", "", "", "", "M", "", "!M", "", "-M", "", "M+1", "", "M-1", "D+M", "D-M", 
         "M-D", "D&M", "D|M"
@@ -79,7 +95,14 @@ public class Code {
         }
         return jmpBits;
     }
-    
+    /**
+     * A private static method that returns the index of string s in String[] arr
+     *
+     * @param arr A String array
+     * @param s A string
+     *
+     * @return the index of s in arr, or -1 if arr does not contain s
+     */
     private static int arrIndexOf(String[] arr, String s) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i].equals(s)) {

@@ -1,6 +1,6 @@
 public class Test {
     public static void main(String[] args) {
-        String test = "hello.asm";
-        System.out.println(test.substring(0, test.indexOf(".")));
+        String test = "@R0 //hello world\n@R1 //hello again";
+        System.out.println(test.replaceAll("//.*", ""));
     }
 }
