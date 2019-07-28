@@ -5,3 +5,7 @@
 nand2tetris/projects/06/assember/package-list
 *.js
 *.css
+*.idea*
+*.iml
+*.out
+*.asm
