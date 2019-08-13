@@ -1,0 +1,123 @@
+/** Class to handle the job of transposing notes and calculating
+    interval distances between keys */
+class Transposer {
+    field String originalKey, newKey;
+    field int keyDiff; // number of half-steps between originalKey and newKey
+    static Array VALID_NOTES;
+    static int NUM_VALID_NOTES;
+
+    constructor Transposer new(String oKey, String nKey) {
+        if (~Transposer.isValidNote(oKey)) {
+            do Output.printString("Original Key is Invalid");
+            do Output.println();
+            do Sys.halt();
+        }
+        if (~Transposer.isValidNote(nKey)) {
+            do Output.printString("Transposed Key is Invalid");
+            do Output.println();
+            do Sys.halt();
+        }
+        let originalKey = oKey;
+        let newKey = nKey;
+        let keyDiff = Transposer.keyDifference(originalKey, newKey);
+        return this;
+    }
+    /** Function to populate the VALID_NOTES array with allowed note names */
+    function void initValidNotes() {
+        let VALID_NOTES = Array.new(12);
+        let VALID_NOTES[0] = "CN";
+        let VALID_NOTES[1] = "C#";
+        let VALID_NOTES[2] = "DN";
+        let VALID_NOTES[3] = "EB";
+        let VALID_NOTES[4] = "EN";
+        let VALID_NOTES[5] = "FN";
+        let VALID_NOTES[6] = "F#";
+        let VALID_NOTES[7] = "GN";
+        let VALID_NOTES[8] = "AB";
+        let VALID_NOTES[9] = "AN";
+        let VALID_NOTES[10] = "BB";
+        let VALID_NOTES[11] = "BN";
+        let NUM_VALID_NOTES = 12;
+        return;
+    }
+    /** Function to print out VALID_NOTES */
+    function void printValidNotes() {
+        var int i;
+        let i = 0;
+        do Output.printString("[");
+        while (i < (NUM_VALID_NOTES - 1)) {
+            do Output.printString(VALID_NOTES[i]);
+            do Output.printString(", ");
+            let i = i + 1;
+        }
+        do Output.printString(VALID_NOTES[NUM_VALID_NOTES - 1]);
+        do Output.printString("]");
+        return;
+    }
+    /** Function to calculate the number of half-steps between two keys */
+    function int keyDifference(String key1, String key2) {
+        var int key1Index, key2Index;
+        let key1Index = Transposer.arrIndexOf(VALID_NOTES, NUM_VALID_NOTES, key1);
+        let key2Index = Transposer.arrIndexOf(VALID_NOTES, NUM_VALID_NOTES, key2);
+        return key2Index - key1Index;
+    }
+    /** Function to tell if a note name is valid */
+    function boolean isValidNote(String n) {
+        var int i;
+        let i = 0;
+        while (i < NUM_VALID_NOTES) {
+            if (Transposer.strEquals(n, VALID_NOTES[i])) {
+                return true;
+            }
+            let i = i + 1;
+        }
+        return false;
+    }
+    /** Function that returns the index of a String s in an Array arr, or -1 if s not in arr */
+    function int arrIndexOf(Array arr, int arrLen, String s) {
+        var int i;
+        let i = 0;
+        while (i < arrLen) {
+            if (Transposer.strEquals(arr[i], s)) {
+                return i;
+            }
+            let i = i + 1;
+        }
+        return -1;
+    }
+    /** Function that returns true if two strings are equal */
+    function boolean strEquals(String a, String b) {
+        var int i, aLen, bLen;
+        let aLen = a.length();
+        let bLen = b.length();
+        if (~(aLen = bLen)) {
+            return false;
+        }
+        let i = 0;
+        while (i < aLen) {
+            if (~(a.charAt(i) = b.charAt(i))) {
+                return false;
+            }
+            let i = i + 1;
+        }
+        return true;
+    }
+    /** Method to transpose a Note object from originalKey to newKey */
+    method void transposeNote(Note note) {
+        var String n;
+        var int index;
+        let n = note.getName();
+        let index = Transposer.arrIndexOf(VALID_NOTES, NUM_VALID_NOTES, n);
+
+        if ((index + keyDiff) < 0) {
+            do note.change(VALID_NOTES[(12 + index + keyDiff)]);
+        } else {
+            if ((index + keyDiff) > 11) {
+                do note.change(VALID_NOTES[(index + keyDiff - 12)]);
+            } else {
+                do note.change(VALID_NOTES[(index + keyDiff)]);
+            }
+        }
+        return;
+    }
+}

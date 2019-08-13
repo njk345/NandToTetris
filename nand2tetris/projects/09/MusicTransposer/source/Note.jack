@@ -1,0 +1,23 @@
+/** Class to represent a musical note */
+class Note {
+    field String name; // the name of the note (e.g. "CN", "EB", "F#")
+
+    constructor Note new(String n) {
+        if (~Transposer.isValidNote(n)) {
+            do Output.printString("Invalid note!");
+            do Output.println();
+            do Sys.halt();
+        }
+        let name = n;
+        return this;
+    }
+    /** Method that returns the name of the note */
+    method String getName() {
+        return name;
+    }
+    /** Method that alters the note's name */
+    method void change(String n) {
+        let name = n;
+        return;
+    }
+}

@@ -1,0 +1,93 @@
+/** A program that takes in a series of musical notes (letter names),
+    the letter name of the key in which the notes are written,
+    and the letter name of another key, and outputs the notes transposed
+    into the other key. */
+class Main {
+    function void main() {
+        var int currIndex, currNoteIndex;
+        var String originalKey, newKey, noteStr, outStr, noteVal, noteName;
+        var Transposer transposer;
+        var Note currNote;
+        var Array notes;
+
+        do Transposer.initValidNotes();
+        do Output.printString("Welcome! The valid note names are: ");
+        do Output.println();
+        do Transposer.printValidNotes();
+        do Output.println();
+        let originalKey = Keyboard.readLine("Enter original key: ");
+        let newKey = Keyboard.readLine("Enter transposed key: ");
+        let transposer = Transposer.new(originalKey, newKey);
+        let notes = Array.new(100);
+
+        /** REPL that asks for a series of space-separated musical note names
+            (the allowed notes are printed out) and prints out the notes transposed
+            from the first key into the second. */
+        while (true) {
+            let noteStr = Keyboard.readLine("Enter notes space-separated to tranpose (Q to quit): ");
+            let outStr = String.new(200);
+            let currIndex = 0;
+            let currNoteIndex = 0;
+
+            while (currIndex < noteStr.length()) {
+                /** End program if the character 'Q' is entered */
+                if (noteStr.charAt(currIndex) = 81) {
+                    do notes.dispose();
+                    do Sys.halt();
+                } else {
+                    /** Skip all whitespace */
+                    if (noteStr.charAt(currIndex) = 32) {
+                        let currIndex = currIndex + 1;
+                    } else { // note --> get key and modifier
+                        /** Notes without modifiers (#, B, N) are rejected and program halts */
+                        if (currIndex = (noteStr.length() - 1)) {
+                            do Output.printString("Invalid Note!");
+                            do Sys.halt();
+                        }
+                        if (noteStr.charAt(currIndex + 1) = 32) {
+                            do Output.printString("Invalid Note!");
+                            do Sys.halt();
+                        }
+                        let noteVal = String.new(10);
+                        let noteVal = noteVal.appendChar(noteStr.charAt(currIndex));
+                        let noteVal = noteVal.appendChar(noteStr.charAt(currIndex + 1));
+
+                        let notes[currNoteIndex] = Note.new(noteVal);
+                        let currIndex = currIndex + 2;
+
+                        // Transpose the note and append its name to the output string
+                        do transposer.transposeNote(notes[currNoteIndex]);
+                        let currNote = notes[currNoteIndex];
+                        let noteName = currNote.getName();
+
+                        let outStr = Main.concat(outStr, noteName);
+                        let outStr = outStr.appendChar(32);
+                        let currNoteIndex = currNoteIndex + 1;
+                    }
+                }
+            }
+            /** If no notes are entered, error message shown */
+            if (outStr.length() = 0) {
+                do Output.printString("Must Enter A Note!");
+                do Output.println();
+            } else {
+                do Output.printString("Transposed Notes: ");
+                do Output.printString(outStr);
+                do Output.println();
+            }
+        }
+        return;
+    }
+    /** Function that takes two strings and returns their concatenation */
+    function String concat(String str1, String str2) {
+        var int len, i;
+        let len = str2.length();
+
+        let i = 0;
+        while (i < len) {
+            let str1 = str1.appendChar(str2.charAt(i));
+            let i = i + 1;
+        }
+        return str1;
+    }
+}
