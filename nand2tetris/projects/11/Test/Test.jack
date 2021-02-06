@@ -1,0 +1,13 @@
+class Test {
+    function void main() {
+        var int nick;
+        let nick = 21;
+        if (nick > 18) {
+            do Output.printInt(nick);
+        }
+        else {
+            do Output.printInt(18);
+        }
+        return;
+    }
+}

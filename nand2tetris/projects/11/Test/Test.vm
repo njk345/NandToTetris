@@ -1,0 +1,18 @@
+function Test.main 1
+push constant 21
+pop local 0
+push local 0
+push constant 18
+gt
+if-goto IF_FALSE1
+push local 0
+call Output.printInt 1
+pop temp 0
+goto IF_TRUE1
+label IF_FALSE1
+push constant 18
+call Output.printInt 1
+pop temp 0
+label IF_TRUE1
+push constant 0
+return

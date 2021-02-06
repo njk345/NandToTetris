@@ -1,0 +1,18 @@
+function Main.main 4
+push const 18
+call String.new 1
+push const 72
+call String.appendChar 2
+call Keyboard.readInt 1
+pop null 1
+push null 1
+call Array.new 1
+pop null 0
+push const 0
+pop null 2
+Label WHILE_EXP1
+push null 2
+not
+if-goto WHILE_END1
+goto WHILE_EXP1
+Label WHILE_END1
